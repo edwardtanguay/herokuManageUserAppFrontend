@@ -12,19 +12,21 @@ function App() {
 	const [formUsername, setFormUsername] = useState('');
 	const [formEmail, setFormEmail] = useState('');
 	const [userIsAdmin, setUserIsAdmin] = useState(false);
-	const [pin, setPin] = useState(''); 
-	const [sessionId, setSessionId] = useState(''); 
+	const [pin, setPin] = useState('');
+	const [sessionId, setSessionId] = useState('');
 
 	const loadUsers = () => {
 		(async () => {
 			const response = await fetch(backendUrl, {
-				method: 'POST',
-				body: JSON.stringify({sessionId})
+				method: 'GET',
+				credentials: "include"
 			});
 			const data = await response.json();
-			const { users} = data;
+			const { users, userIsAdmin } = data;
 			users.forEach(user => user.isEditingEmail = false);
 			setUsers(users);
+			setUserIsAdmin(userIsAdmin);
+			setSessionId(data.sessionId);
 		})();
 	}
 
@@ -115,8 +117,11 @@ function App() {
 	const handleLogin = async () => {
 		const response = await fetch(`${backendUrl}/login`, {
 			method: 'POST',
-			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify({pin})
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			credentials: "include",
+			body: JSON.stringify({ pin })
 		});
 		setPin('');
 		const data = await response.json();
@@ -134,12 +139,14 @@ function App() {
 	const handleLogout = async () => {
 		const response = await fetch(`${backendUrl}/logout`, {
 			method: 'POST',
-			headers: { 'Content-Type': 'application/json' }
+			headers: { 'Content-Type': 'application/json' },
+			credentials: 'include'
 		});
 		const data = await response.json();
 		const { idCode } = data;
 		if (idCode === 'adminLoggedOut') {
 			setUserIsAdmin(false);
+			setSessionId('');
 		}
 	}
 

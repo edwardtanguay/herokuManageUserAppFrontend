@@ -12,6 +12,7 @@ function App() {
 	const [formUsername, setFormUsername] = useState('');
 	const [formEmail, setFormEmail] = useState('');
 	const [userIsAdmin, setUserIsAdmin] = useState(false);
+	const [pin, setPin] = useState('');
 
 	const loadUsers = () => {
 		(async () => {
@@ -104,20 +105,22 @@ function App() {
 		loadUsers();
 	}
 
+	const handlePinChange = (e) => {
+		setPin(e.target.value);
+	}
+
 	const handleLogin = async () => {
 		const response = await fetch(`${backendUrl}/login`, {
 			method: 'POST',
 			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify({
-				user: {
-					pin: '1234'
-				}
-			})
+			body: JSON.stringify({pin})
 		});
 		const data = await response.json();
 		const { idCode } = data;
 		if (idCode === 'adminLoggedIn') {
 			setUserIsAdmin(true);
+		} else {
+			setUserIsAdmin(false);
 		}
 	}
 
@@ -140,7 +143,7 @@ function App() {
 				<div className="adminArea">
 					{!userIsAdmin && (
 						<>
-							<button onClick={handleLogin}>Login</button>
+							<input type="password" className="pin" onChange={handlePinChange} /><button onClick={handleLogin}>Login</button>
 						</>
 					)}
 					{userIsAdmin && (

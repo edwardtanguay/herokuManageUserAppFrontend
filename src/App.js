@@ -13,7 +13,6 @@ function App() {
 	const [formEmail, setFormEmail] = useState('');
 	const [userIsAdmin, setUserIsAdmin] = useState(false);
 	const [pin, setPin] = useState('');
-	const [sessionId, setSessionId] = useState('');
 
 	const loadUsers = () => {
 		(async () => {
@@ -26,7 +25,6 @@ function App() {
 			users.forEach(user => user.isEditingEmail = false);
 			setUsers(users);
 			setUserIsAdmin(userIsAdmin);
-			setSessionId(data.sessionId);
 		})();
 	}
 
@@ -125,14 +123,11 @@ function App() {
 		});
 		setPin('');
 		const data = await response.json();
-		console.log(data);
 		const { idCode } = data;
 		if (idCode === 'adminLoggedIn') {
 			setUserIsAdmin(true);
-			setSessionId(data.sessionId);
 		} else {
 			setUserIsAdmin(false);
-			setSessionId('');
 		}
 	}
 
@@ -146,7 +141,6 @@ function App() {
 		const { idCode } = data;
 		if (idCode === 'adminLoggedOut') {
 			setUserIsAdmin(false);
-			setSessionId('');
 		}
 	}
 

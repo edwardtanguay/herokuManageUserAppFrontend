@@ -12,16 +12,19 @@ function App() {
 	const [formUsername, setFormUsername] = useState('');
 	const [formEmail, setFormEmail] = useState('');
 	const [userIsAdmin, setUserIsAdmin] = useState(false);
-	const [pin, setPin] = useState('');
+	const [pin, setPin] = useState(''); 
+	const [sessionId, setSessionId] = useState(''); 
 
 	const loadUsers = () => {
 		(async () => {
-			const response = await fetch(backendUrl);
+			const response = await fetch(backendUrl, {
+				method: 'POST',
+				body: JSON.stringify({sessionId})
+			});
 			const data = await response.json();
-			const { users, userIsAdmin } = data;
+			const { users} = data;
 			users.forEach(user => user.isEditingEmail = false);
 			setUsers(users);
-			setUserIsAdmin(userIsAdmin);
 		})();
 	}
 
@@ -115,12 +118,16 @@ function App() {
 			headers: { 'Content-Type': 'application/json' },
 			body: JSON.stringify({pin})
 		});
+		setPin('');
 		const data = await response.json();
+		console.log(data);
 		const { idCode } = data;
 		if (idCode === 'adminLoggedIn') {
 			setUserIsAdmin(true);
+			setSessionId(data.sessionId);
 		} else {
 			setUserIsAdmin(false);
+			setSessionId('');
 		}
 	}
 
@@ -139,7 +146,7 @@ function App() {
 	return (
 		<div className="App">
 			<div className="topHeader">
-				<h1>User Management App</h1>
+				<h1>User Management App [{sessionId}]</h1>
 				<div className="adminArea">
 					{!userIsAdmin && (
 						<>

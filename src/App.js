@@ -153,7 +153,9 @@ function App() {
 			</div>
 			<div className="addUserArea">
 				<div className="topInfoRow">
-					<button onClick={handleToggleAddUserArea}>Add User</button>
+					{userIsAdmin && (
+						<button onClick={handleToggleAddUserArea}>Add User</button>
+					)}
 					<div className="totalInfo">Total: {users.length} users</div>
 				</div>
 				{isAddingUser && (
@@ -212,10 +214,12 @@ function App() {
 									<div className="data editing"><input type="text" onChange={(e) => handleEmailChange(user, e)} value={user.email} /><button onClick={() => handleEmailSave(user)}>Save</button><button onClick={() => handleEditButton(user)}>Cancel</button></div>
 								)}
 							</div>
-							<div className="iconRow">
-								<button onClick={() => handleDeleteButton(user)} className="icon"><RiDeleteBin6Line /></button>
-								<button className="icon" onClick={() => handleEditButton(user)}><GrEdit /></button>
-							</div>
+							{userIsAdmin && (
+								<div className="iconRow">
+									<button onClick={() => handleDeleteButton(user)} className="icon"><RiDeleteBin6Line /></button>
+									<button className="icon" onClick={() => handleEditButton(user)}><GrEdit /></button>
+								</div>
+							)}
 						</div>
 					)
 				})}

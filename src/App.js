@@ -153,7 +153,7 @@ function App() {
 	return (
 		<div className="App">
 			<div className="topHeader">
-				<h1>User Management App [{sessionId}]</h1>
+				<h1>User Management App</h1>
 				<div className="adminArea">
 					{!userIsAdmin && (
 						<>

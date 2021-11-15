@@ -97,4 +97,22 @@ body {
 		display: flex;
 		justify-content: space-between;
 	}
+	.topHeader {
+		display: flex;
+		justify-content: space-between;
+		.adminArea {
+			margin: 11px 0 0 0;
+		}
+		.loggedInAsAdmin {
+			background-color: yellow;
+			color: tomato;
+			&::before {
+				content: '\00a0\00a0';
+			}
+			&::after {
+				content: '\00a0\00a0';
+			}
+			margin: 0 10px 0 0;
+		}
+	}
 }

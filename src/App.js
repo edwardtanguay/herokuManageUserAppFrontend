@@ -11,13 +11,16 @@ function App() {
 	const [formName, setFormName] = useState('');
 	const [formUsername, setFormUsername] = useState('');
 	const [formEmail, setFormEmail] = useState('');
+	const [userIsAdmin, setUserIsAdmin] = useState(false);
 
 	const loadUsers = () => {
 		(async () => {
 			const response = await fetch(backendUrl);
-			const users = await response.json();
+			const data = await response.json();
+			const { users, userIsAdmin } = data;
 			users.forEach(user => user.isEditingEmail = false);
 			setUsers(users);
+			setUserIsAdmin(userIsAdmin);
 		})();
 	}
 
@@ -83,29 +86,71 @@ function App() {
 		setFormEmail(e.target.value);
 	}
 
-	const handleFormSaveButton = (e) => {
+	const handleFormSaveButton = async (e) => {
 		e.preventDefault();
-		(async () => {
-			await fetch(`${backendUrl}/insertuser`, {
-				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({
-					user: {
-						name: formName,
-						username: formUsername,
-						email: formEmail
-					}
-				})
-			});
-			clearForm();
-			setIsAddingUser(false);
-			loadUsers();
-		})();
+		await fetch(`${backendUrl}/insertuser`, {
+			method: 'POST',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({
+				user: {
+					name: formName,
+					username: formUsername,
+					email: formEmail
+				}
+			})
+		});
+		clearForm();
+		setIsAddingUser(false);
+		loadUsers();
+	}
+
+	const handleLogin = async () => {
+		const response = await fetch(`${backendUrl}/login`, {
+			method: 'POST',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({
+				user: {
+					pin: '1234'
+				}
+			})
+		});
+		const data = await response.json();
+		const { idCode } = data;
+		if (idCode === 'adminLoggedIn') {
+			setUserIsAdmin(true);
+		}
+	}
+
+	const handleLogout = async () => {
+		const response = await fetch(`${backendUrl}/logout`, {
+			method: 'POST',
+			headers: { 'Content-Type': 'application/json' }
+		});
+		const data = await response.json();
+		const { idCode } = data;
+		if (idCode === 'adminLoggedOut') {
+			setUserIsAdmin(false);
+		}
 	}
 
 	return (
 		<div className="App">
-			<h1>User Management App</h1>
+			<div className="topHeader">
+				<h1>User Management App</h1>
+				<div className="adminArea">
+					{!userIsAdmin && (
+						<>
+							<button onClick={handleLogin}>Login</button>
+						</>
+					)}
+					{userIsAdmin && (
+						<>
+							<span className="loggedInAsAdmin">Logged in as ADMIN</span>
+							<button onClick={handleLogout}>Logout</button>
+						</>
+					)}
+				</div>
+			</div>
 			<div className="addUserArea">
 				<div className="topInfoRow">
 					<button onClick={handleToggleAddUserArea}>Add User</button>
